@@ -1,6 +1,7 @@
 const boom = require('@hapi/boom');
 
-const getConnection = require('../libs/postgres');
+// connection to postgres using pool
+const pool = require('../libs/postgres.pool.js');
 
 class UserService {
   constructor() {}
@@ -9,19 +10,19 @@ class UserService {
     return data;
   }
 
-  async find() {
-  const client = await getConnection();
-  try {
-    const rta = await client.query('SELECT * FROM task'); // 👈 SINGULAR
-    return rta.rows;
-  } catch (error) {
-    console.error(error); // 👈 CLAVE
-    throw error;
-  } finally {
-    await client.end();
+async find() {
+    try {
+      // CAMBIO: usamos pool.query directamente (no client, no end)
+      const rta = await pool.query(
+        'SELECT * FROM task ORDER BY id ASC' 
+        // CAMBIO: ORDER BY para mantener el orden de creación
+      );
+      return rta.rows;
+    } catch (error) {
+      console.error(error);
+      throw boom.internal('Error al obtener las tareas');
+    }
   }
-}
-
 
   async findOne(id) {
     return { id };
