@@ -1,5 +1,7 @@
 const boom = require('@hapi/boom');
 
+const { models } = require('../libs/sequelize');
+
 class OrderService {
 
   constructor(){
@@ -9,7 +11,8 @@ class OrderService {
   }
 
   async find() {
-    return [];
+    const rta = await models.Order.findAll();
+    return rta;
   }
 
   async findOne(id) {
