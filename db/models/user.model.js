@@ -1,3 +1,5 @@
+// Modelo de mi dB para la tabla de usuarios
+
 const { Model, DataTypes, Sequelize} = require('sequelize');
 
 // Definición de la estructura de la tabla de usuarios

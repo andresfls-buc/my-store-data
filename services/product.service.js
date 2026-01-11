@@ -1,8 +1,8 @@
 const { faker } = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 
-//Conection to Postgres using sequelize
-const sequelize = require('../libs/sequelize');
+// Importamos el cliente de la base de datos
+const { models } = require('../libs/sequelize');
 
 
 class ProductsService {
@@ -36,9 +36,8 @@ class ProductsService {
   }
 
   async find() {
-    const query = 'SELECT * FROM task ORDER BY id ASC';
-    const [data] = await sequelize.query(query);
-    return data;
+    const rta = await models.Product.findAll();
+    return rta;
   }
 
   async findOne(id) {
