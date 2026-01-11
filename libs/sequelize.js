@@ -2,8 +2,13 @@ const { Sequelize } = require('sequelize');
 
 // Importing configuration
 const { config } = require('../config/config');
+
+// Importing model setup function
+const  setUpModels  = require('./../db/models');
+
 // Encoding the user to handle special characters
 const USER = encodeURIComponent(config.dbUser);
+
 // Encoding the password to handle special characters
 const PASSWORD = encodeURIComponent(config.dbPassword);
 // Connection URI
@@ -13,6 +18,12 @@ const sequelize = new Sequelize(URI, {
     dialect: 'postgres',
     logging: true,
 });
+
+// Initialize models
+setUpModels(sequelize);
+
+
+sequelize.sync();
 
 // Test the connection
 module.exports = sequelize;

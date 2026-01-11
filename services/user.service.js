@@ -1,7 +1,7 @@
 const boom = require('@hapi/boom');
 
-// connection to postgres using pool
-const pool = require('../libs/postgres.pool.js');
+// Importamos el cliente de la base de datos
+const { models } = require('../libs/sequelize');
 
 class UserService {
   constructor() {}
@@ -12,12 +12,9 @@ class UserService {
 
 async find() {
     try {
-      // CAMBIO: usamos pool.query directamente (no client, no end)
-      const rta = await pool.query(
-        'SELECT * FROM task ORDER BY id ASC' 
-        // CAMBIO: ORDER BY para mantener el orden de creación
-      );
-      return rta.rows;
+      // Obtener todos los usuarios de la base de datos
+      const rta = await models.User.findAll();
+      return rta;
     } catch (error) {
       console.error(error);
       throw boom.internal('Error al obtener las tareas');
