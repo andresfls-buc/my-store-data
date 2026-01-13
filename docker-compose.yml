@@ -10,10 +10,36 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
 
-  pgadmin:  # <-- Ahora está alineado con 'postgres'
+  pgadmin:
     image: dpage/pgadmin4
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@mail.com
       - PGADMIN_DEFAULT_PASSWORD=root
     ports:
       - "5050:80"
+
+  mysql:
+    image: mysql:8
+    # IMPORTANTE: Para tu Mac M1/M2/M3 añade esto para evitar el crash
+    platform: linux/amd64 
+    environment:
+      - MYSQL_DATABASE=my_store
+      - MYSQL_ROOT_PASSWORD=admin123 # Clave para el usuario root
+      - MYSQL_USER=andres            # Aquí creamos al usuario 'andres'
+      - MYSQL_PASSWORD=admin123      # Clave para 'andres'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root               # Usa root para tener control total en desarrollo
+      - PMA_PASSWORD=admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql

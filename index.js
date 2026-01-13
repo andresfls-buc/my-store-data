@@ -1,3 +1,7 @@
+const result = require('dotenv').config();
+if (result.error) {
+  console.log("Error cargando .env:", result.error);
+}
 const express = require('express');
 const cors = require('cors');
 const routerApi = require('./routes');
