@@ -1,29 +1,25 @@
 const { Sequelize } = require('sequelize');
-
-// Importing configuration
 const { config } = require('../config/config');
+const setUpModels = require('./../db/models');
 
-// Importing model setup function
-const  setUpModels  = require('./../db/models');
-
-// Encoding the user to handle special characters
 const USER = encodeURIComponent(config.dbUser);
-
-// Encoding the password to handle special characters
 const PASSWORD = encodeURIComponent(config.dbPassword);
-// Connection URI
-const URI = `postgresql://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+
+// Asegúrate de que config.dbHost sea 127.0.0.1
+const URI = `mysql://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
 
 const sequelize = new Sequelize(URI, {
-    dialect: 'postgres',
-    logging: true,
+    dialect: 'mysql',
+    logging: console.log, // Cambia true por console.log para quitar el Warning
 });
 
-// Initialize models
 setUpModels(sequelize);
 
+// --- CAMBIO IMPORTANTE AQUÍ ---
+// No uses .sync() suelto si puedes evitarlo, pero para que no te de timeout
+// vamos a envolverlo en un catch para ver qué pasa realmente.
+sequelize.sync()
+  .then(() => console.log('Tablas sincronizadas'))
+  .catch(err => console.error('Error al sincronizar:', err));
 
-sequelize.sync();
-
-// Test the connection
 module.exports = sequelize;
