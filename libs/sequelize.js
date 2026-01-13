@@ -5,9 +5,10 @@ const setUpModels = require('./../db/models');
 const USER = encodeURIComponent(config.dbUser);
 const PASSWORD = encodeURIComponent(config.dbPassword);
 
-// Asegúrate de que config.dbHost sea 127.0.0.1
+// connection URI for MySQL
 const URI = `mysql://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
 
+// Crear la instancia de Sequelize 
 const sequelize = new Sequelize(URI, {
     dialect: 'mysql',
     logging: console.log, // Cambia true por console.log para quitar el Warning
