@@ -16,11 +16,6 @@ const sequelize = new Sequelize(URI, {
 
 setUpModels(sequelize);
 
-// --- CAMBIO IMPORTANTE AQUÍ ---
-// No uses .sync() suelto si puedes evitarlo, pero para que no te de timeout
-// vamos a envolverlo en un catch para ver qué pasa realmente.
-sequelize.sync()
-  .then(() => console.log('Tablas sincronizadas'))
-  .catch(err => console.error('Error al sincronizar:', err));
+
 
 module.exports = sequelize;
