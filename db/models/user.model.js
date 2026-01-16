@@ -1,19 +1,14 @@
-// Modelo de mi dB para la tabla de usuarios
+const { Model, DataTypes, Sequelize } = require('sequelize');
 
-const { Model, DataTypes, Sequelize} = require('sequelize');
-
-// Definición de la estructura de la tabla de usuarios
 const USER_TABLE = 'users';
 
-// Definición del esquema de la tabla de usuarios
 const UserSchema = {
   id: {
     allowNull: false,
-    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true,
-    autoIncrement: true
+    type: DataTypes.INTEGER
   },
-  
   email: {
     allowNull: false,
     type: DataTypes.STRING,
@@ -23,28 +18,20 @@ const UserSchema = {
     allowNull: false,
     type: DataTypes.STRING
   },
-  
-    password: {
-    allowNull: false,
-    type: DataTypes.STRING
-    
-  },
-  
+  // Solo un campo de password, y el createdAt abajo
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE,
     field: 'created_at',
     defaultValue: Sequelize.NOW
-  
   }
 }
 
 class User extends Model {
-  static associate() {
-    // Definir asociaciones aquí si es necesario
+  static associate(models) {
+    // Definir asociaciones aquí
   }
 
-   // Configuración del modelo
   static config(sequelize) {
     return {
       sequelize,

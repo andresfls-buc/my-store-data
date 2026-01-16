@@ -42,6 +42,7 @@ class Order extends Model {
     // Una orden pertenece a un cliente
     this.belongsTo(models.Customer, { as: 'customer' });
     
+    /*
     // Una orden puede tener muchos productos a través de una tabla intermedia
     this.belongsToMany(models.Product, {
       as: 'items',
@@ -49,6 +50,7 @@ class Order extends Model {
       foreignKey: 'orderId',
       otherKey: 'productId'
     });
+    */
   }
 
   static config(sequelize) {
