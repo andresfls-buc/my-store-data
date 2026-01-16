@@ -1,30 +1,37 @@
 const boom = require('@hapi/boom');
-const { models } = require('../libs/sequelize'); // Importamos la conexión a la DB
+const { models } = require('../libs/sequelize');
 
 class CustomerService {
   constructor() {}
 
-  // Función para buscar a todos los clientes
   async find() {
     const rta = await models.Customer.findAll({
-        include: ['user'] // Esto trae también la info del usuario relacionado
+      include: ['user'] // includes related user
     });
     return rta;
   }
 
-  // Función para crear un cliente nuevo
   async create(data) {
     const newCustomer = await models.Customer.create(data);
     return newCustomer;
   }
 
-  // Función para buscar un solo cliente
   async findOne(id) {
     const customer = await models.Customer.findByPk(id);
-    if (!customer) {
-      throw boom.notFound('customer not found');
-    }
+    if (!customer) throw boom.notFound('customer not found');
     return customer;
+  }
+
+  async update(id, changes) {
+    const customer = await this.findOne(id);
+    const updatedCustomer = await customer.update(changes);
+    return updatedCustomer;
+  }
+
+  async delete(id) {
+    const customer = await this.findOne(id);
+    await customer.destroy();
+    return { id };
   }
 }
 
