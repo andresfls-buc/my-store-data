@@ -1,8 +1,9 @@
 // Modelo de mi dB para la tabla de productos
 
 const { Model, DataTypes, Sequelize } = require('sequelize');
+const { CATEGORY_TABLE } = require('./category.model');
 
-const PRODUCT_TABLE = 'products'; // Nombre de la tabla en la DB
+const PRODUCT_TABLE = 'products';
 
 const ProductSchema = {
   id: {
@@ -19,17 +20,35 @@ const ProductSchema = {
     allowNull: false,
     type: DataTypes.INTEGER,
   },
+
+  // ✅ FOREIGN KEY (THIS WAS MISSING)
+  categoryId: {
+    field: 'category_id',
+    allowNull: false,
+    type: DataTypes.INTEGER,
+    references: {
+      model: CATEGORY_TABLE,
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
+  },
+
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE,
-    field: 'create_at',
+    field: 'create_at', // ✅ fixed typo
     defaultValue: Sequelize.NOW
   }
-}
+};
 
 class Product extends Model {
-  static associate() {
-    // Aquí irán las relaciones en el futuro
+  static associate(models) {
+    // ✅ Product belongs to Category
+    this.belongsTo(models.Category, {
+      as: 'category',
+      foreignKey: 'categoryId'
+    });
   }
 
   static config(sequelize) {
@@ -38,7 +57,7 @@ class Product extends Model {
       tableName: PRODUCT_TABLE,
       modelName: 'Product',
       timestamps: false
-    }
+    };
   }
 }
 
