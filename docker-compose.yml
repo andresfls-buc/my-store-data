@@ -1,4 +1,5 @@
 services:
+  # --- BASE DE DATOS POSTGRESQL ---
   postgres:
     image: postgres:13
     environment:
@@ -8,8 +9,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # Tus datos de Postgres se guardan en la carpeta local 'postgres_data'
       - ./postgres_data:/var/lib/postgresql/data
 
+  # --- ADMINISTRADOR DE POSTGRES (pgAdmin) ---
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -17,29 +20,40 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=root
     ports:
       - "5050:80"
+    volumes:
+      # CAMBIO CLAVE: Volumen para que pgAdmin guarde tus servidores registrados y contraseñas
+      - pgadmin_data:/var/lib/pgadmin
 
+  # --- BASE DE DATOS MYSQL ---
   mysql:
     image: mysql:8
-    # IMPORTANTE: Para tu Mac M1/M2/M3 añade esto para evitar el crash
+    # Mantiene compatibilidad con procesadores modernos (M1/M2/Intel)
     platform: linux/amd64 
     environment:
       - MYSQL_DATABASE=my_store
-      - MYSQL_ROOT_PASSWORD=admin123 # Clave para el usuario root
-      - MYSQL_USER=andres            # Aquí creamos al usuario 'andres'
-      - MYSQL_PASSWORD=admin123      # Clave para 'andres'
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_USER=andres
+      - MYSQL_PASSWORD=admin123
     ports:
       - "3306:3306"
     volumes:
+      # Los datos de MySQL se guardan en la carpeta local 'mysql_data'
       - ./mysql_data:/var/lib/mysql
 
+  # --- ADMINISTRADOR DE MYSQL (phpMyAdmin) ---
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     platform: linux/amd64
     environment:
-      - PMA_HOST=mysql
-      - PMA_USER=root               # Usa root para tener control total en desarrollo
+      - PMA_HOST=mysql # Se conecta al servicio llamado 'mysql' arriba definido
+      - PMA_USER=root
       - PMA_PASSWORD=admin123
     ports:
       - "8080:80"
     depends_on:
       - mysql
+
+# DEFINICIÓN DE VOLÚMENES NOMBRADOS
+volumes:
+  # Este volumen es el que permite que pgAdmin "recuerde" tus servidores
+  pgadmin_data:
