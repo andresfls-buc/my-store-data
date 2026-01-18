@@ -28,6 +28,7 @@ const CategorySchema = {
   }
 }
 
+// Una categoría tiene muchos productos
 class Category extends Model {
   static associate(models) {
     this.hasMany(models.Product, {
