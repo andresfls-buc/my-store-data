@@ -1,8 +1,5 @@
-// Modelo de mi dB para la tabla de órdenes
-
 const { Model, DataTypes, Sequelize } = require('sequelize');
 
-// Importamos el nombre de la tabla de clientes para la relación (Foreign Key)
 const CUSTOMER_TABLE = 'customers'; 
 const ORDER_TABLE = 'orders';
 
@@ -27,7 +24,7 @@ const OrderSchema = {
   status: {
     allowNull: false,
     type: DataTypes.STRING,
-    defaultValue: 'pending', // pending, paid, shipped, delivered
+    defaultValue: 'pending', 
   },
   createdAt: {
     allowNull: false,
@@ -39,18 +36,16 @@ const OrderSchema = {
 
 class Order extends Model {
   static associate(models) {
-    // Una orden pertenece a un cliente
+    // Relación 1:1 o N:1 - Una orden pertenece a un solo cliente
     this.belongsTo(models.Customer, { as: 'customer' });
     
-    /*
-    // Una orden puede tener muchos productos a través de una tabla intermedia
+    // Relación N:N - Una orden tiene muchos productos
     this.belongsToMany(models.Product, {
-      as: 'items',
-      through: models.OrderProduct, // Esta es la tabla pivote
-      foreignKey: 'orderId',
-      otherKey: 'productId'
+      as: 'items', // Nombre de la relación para los includes (e.g., { include: ['items'] })
+      through: models.OrderProduct, // Modelo de la tabla pivote
+      foreignKey: 'orderId', // FK hacia este modelo (Order)
+      otherKey: 'productId'  // FK hacia el otro modelo (Product)
     });
-    */
   }
 
   static config(sequelize) {

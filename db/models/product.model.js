@@ -1,5 +1,3 @@
-// Modelo de mi dB para la tabla de productos
-
 const { Model, DataTypes, Sequelize } = require('sequelize');
 const { CATEGORY_TABLE } = require('./category.model');
 
@@ -20,8 +18,7 @@ const ProductSchema = {
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-
-  // ✅ FOREIGN KEY (THIS WAS MISSING)
+  // Llave foránea hacia Categorías
   categoryId: {
     field: 'category_id',
     allowNull: false,
@@ -33,21 +30,28 @@ const ProductSchema = {
     onUpdate: 'CASCADE',
     onDelete: 'SET NULL'
   },
-
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE,
-    field: 'create_at', // ✅ fixed typo
+    field: 'created_at', // Corregido a 'created_at' para consistencia con 'order_id', etc.
     defaultValue: Sequelize.NOW
   }
 };
 
 class Product extends Model {
   static associate(models) {
-    // ✅ Product belongs to Category
+    // Relación 1:N - Un producto pertenece a una categoría
     this.belongsTo(models.Category, {
-      as: 'category',
-      foreignKey: 'categoryId'
+      as: 'category'
+    });
+
+    // Relación N:N - Un producto puede estar en muchas órdenes
+    // Se usa la misma tabla pivote que definimos en Order
+    this.belongsToMany(models.Order, {
+      as: 'orders',
+      through: models.OrderProduct,
+      foreignKey: 'productId', // FK de este modelo en la tabla pivote
+      otherKey: 'orderId'      // FK del modelo destino en la tabla pivote
     });
   }
 
