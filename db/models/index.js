@@ -3,6 +3,7 @@ const { Order, OrderSchema } = require('./order.model');
 const { User, UserSchema } = require('./user.model');
 const { Category, CategorySchema } = require('./category.model');
 const { Product, ProductSchema } = require('./product.model');
+const { OrderProduct, OrderProductSchema } = require('./order-product.model');
 
 function setupModels(sequelize) {
   // 1. Inicialización (Construir las casas)
@@ -11,6 +12,7 @@ function setupModels(sequelize) {
   Category.init(CategorySchema, Category.config(sequelize));
   Product.init(ProductSchema, Product.config(sequelize));
   Order.init(OrderSchema, Order.config(sequelize));
+  OrderProduct.init(OrderProductSchema, OrderProduct.config(sequelize));
 
   // 2. Asociaciones (Conectar los cables)
   // IMPORTANTE: Se hace DESPUÉS de que todos los modelos están inicializados
@@ -19,6 +21,7 @@ function setupModels(sequelize) {
   Category.associate(sequelize.models);
   Product.associate(sequelize.models);
   Order.associate(sequelize.models);
+  OrderProduct.associate(sequelize.models);
 }
 
 module.exports = setupModels;

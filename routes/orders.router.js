@@ -1,11 +1,13 @@
 const express = require('express');
 const OrderService = require('./../services/order.service');
+const validatorHandler = require('./../middlewares/validator.handler');
+const { createOrderSchema, getOrderSchema } = require('./../schemas/order.schema');
 const router = express.Router();
 
 const service = new OrderService();
 
 // GET all orders
-router.get('/', async (req, res, next) => {
+router.get('/', validatorHandler(getOrderSchema, 'params'), async (req, res, next) => {
   try {
     const orders = await service.find();
     res.json(orders);
@@ -15,7 +17,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // GET one order
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', validatorHandler(getOrderSchema, 'params'), async (req, res, next) => {
   try {
     const { id } = req.params;
     const order = await service.findOne(id);
@@ -26,7 +28,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST create a new order
-router.post('/', async (req, res, next) => {
+router.post('/', validatorHandler(createOrderSchema, 'body'), async (req, res, next) => {
   try {
     const body = req.body;
     const newOrder = await service.create(body);
