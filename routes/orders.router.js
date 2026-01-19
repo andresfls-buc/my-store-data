@@ -7,7 +7,7 @@ const router = express.Router();
 const service = new OrderService();
 
 // GET all orders
-router.get('/', validatorHandler(getOrderSchema, 'params'), async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const orders = await service.find();
     res.json(orders);
