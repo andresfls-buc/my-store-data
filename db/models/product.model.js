@@ -42,7 +42,8 @@ class Product extends Model {
   static associate(models) {
     // Relación 1:N - Un producto pertenece a una categoría
     this.belongsTo(models.Category, {
-      as: 'category'
+      as: 'category',
+      foreignKey: 'categoryId'
     });
 
     // Relación N:N - Un producto puede estar en muchas órdenes
