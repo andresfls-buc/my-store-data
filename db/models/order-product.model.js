@@ -9,6 +9,7 @@ const OrderProductSchema = {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  //Link to Orders table
   orderId: {
     field: 'order_id',
     allowNull: false,
@@ -17,6 +18,7 @@ const OrderProductSchema = {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE'
   },
+  //Link to Products table
   productId: {
     field: 'product_id',
     allowNull: false,
