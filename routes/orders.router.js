@@ -38,6 +38,17 @@ router.post('/', validatorHandler(createOrderSchema, 'body'), async (req, res, n
   }
 });
 
+// POST add item to an order
+router.post('/add-item', async (req, res, next) => {
+  try {
+    const body = req.body;
+    const newItem = await service.addItem(body);
+    res.status(201).json(newItem);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // PATCH update order
 router.patch('/:id', async (req, res, next) => {
   try {
