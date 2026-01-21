@@ -6,15 +6,25 @@ class OrderService {
 
   // CREATE a new order
   async create(data) {
-    // data must include customerId (and optionally other fields)
     const newOrder = await models.Order.create(data);
     return newOrder;
+  }
+
+  /**
+   * ADD ITEM to an order (The N:N logic)
+   * This method saves the relationship in the 'orders_products' table.
+   * Expected data: { orderId: 3, productId: 1, amount: 5 }
+   */
+  async addItem(data) {
+    // We use the OrderProduct model which represents our pivot table
+    const newItem = await models.OrderProduct.create(data);
+    return newItem;
   }
 
   // GET all orders
   async find() {
     const rta = await models.Order.findAll({
-      include: ['customer'] // include the customer linked to this order
+      include: ['customer'] 
     });
     return rta;
   }
@@ -22,10 +32,19 @@ class OrderService {
   // GET one order by ID
   async findOne(id) {
     const order = await models.Order.findByPk(id, {
-      association: ['customer'], // optional: fetch customer info
-      include: ['user']  // optional: fetch user info
+      // 'customer' and 'items' must match the aliases in your Order model associations
+      include: [
+        {
+          association: 'customer',
+          include: ['user'] // Fetches the user account associated with the customer
+        },
+        'items' // Fetches the list of products via the OrderProduct pivot table
+      ]
     });
-    if (!order) throw boom.notFound('order not found');
+    
+    if (!order) {
+      throw boom.notFound('order not found');
+    }
     return order;
   }
 
