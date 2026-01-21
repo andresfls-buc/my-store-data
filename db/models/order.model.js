@@ -31,6 +31,22 @@ const OrderSchema = {
     type: DataTypes.DATE,
     field: 'created_at',
     defaultValue: Sequelize.NOW
+  },
+
+  total: {
+    allowNull: true,
+    // Virtual means this column does not exist in DB
+    type: DataTypes.VIRTUAL,
+    get() {
+      // Check if the order has items loaded
+      if (this.items && Array.isArray(this.items)) {
+        return this.items.reduce((total, item) => {
+          // Total sum: price * amount
+          return total + (item.price * item.OrderProduct.amount);
+        }, 0);
+      }
+      return 0;
+    }
   }
 }
 
