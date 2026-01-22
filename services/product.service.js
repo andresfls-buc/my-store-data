@@ -11,42 +11,45 @@ class ProductsService {
 
   /**
    * Creates a new product in the database.
-   * After creation, it calls findOne to return the product 
-   * WITH its associated category data.
    */
   async create(data) {
-    // .create() generates the INSERT SQL command
     const newProduct = await models.Product.create(data);
-    // Reuse findOne to return the full object (including the category)
     return this.findOne(newProduct.id);
   }
 
   /**
-   * Retrieves all products from the database.
-   * Uses Eager Loading to join the Category table.
+   * Retrieves all products with optional pagination.
+   * @param {Object} query - Contains limit and offset for pagination
    */
-  async find() {
-    const rta = await models.Product.findAll({
-      // 'include' performs a LEFT JOIN with the categories table
-      // so the response has a 'category' object instead of just a 'categoryId'
+  async find(query) { // <-- CORRECCIÓN: Ahora recibimos 'query' como parámetro
+    const options = {
       include: ['category'],
-    });
+      where: {}
+    };
+
+    // CORRECCIÓN: Extraemos limit y offset del objeto query recibido
+    const { limit, offset } = query || {}; 
+
+    if (limit && offset) {
+      // CORRECCIÓN: Convertimos a Number para asegurar que Sequelize lo procese bien
+      options.limit = parseInt(limit);
+      options.offset = parseInt(offset);
+    }
+
+    // CORRECCIÓN: Todo este bloque ahora está dentro del scope de la función find
+    const rta = await models.Product.findAll(options);
     return rta;
   }
 
   /**
    * Finds a specific product by its Primary Key (ID).
-   * Throws a 404 error if the product doesn't exist.
    */
   async findOne(id) {
     const product = await models.Product.findByPk(id, {
-      // We include the category here so single-product views are complete
       include: ['category']
     });
     
-    // Check if the database returned anything
     if (!product) {
-      // Boom.notFound sends a clean 404 response to the client
       throw boom.notFound('product not found');
     }
     return product;
@@ -54,13 +57,9 @@ class ProductsService {
 
   /**
    * Updates an existing product.
-   * First, it verifies the product exists using findOne.
    */
   async update(id, changes) {
-    // Logic: verify existence first. If not found, findOne throws the 404.
     const product = await this.findOne(id);
-    
-    // .update() only changes the fields provided in 'changes'
     const updatedProduct = await product.update(changes);
     return updatedProduct;
   }
@@ -69,17 +68,10 @@ class ProductsService {
    * Deletes a product from the database.
    */
   async delete(id) {
-    // Logic: verify existence first.
     const product = await this.findOne(id);
-    
-    // .destroy() generates the DELETE SQL command
     await product.destroy();
-    
-    // Return the ID of the deleted item to confirm to the client
     return { id };
   }
-
 }
 
-// Export the class so it can be instantiated in the router
 module.exports = ProductsService;

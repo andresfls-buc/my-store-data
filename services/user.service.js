@@ -26,7 +26,9 @@ async find() {
 
   async findOne(id) {
     // Find user by primary key
-    const user = await models.User.findByPk(id);
+    const user = await models.User.findByPk(id , {
+      include: ['customer']
+    });
     if (!user) {
       throw boom.notFound('User not found');
     }
