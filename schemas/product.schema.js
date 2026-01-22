@@ -1,17 +1,15 @@
 const Joi = require('joi');
 
-// Individual field definitions
+// Definiciones de campos individuales
 const id = Joi.number().integer();
 const name = Joi.string().min(3).max(15);
-const price = Joi.number().integer().min(10);
+// CAMBIO: Quitamos .integer() para permitir decimales (ej. 19.99)
+const price = Joi.number().min(10); 
 const image = Joi.string().uri();
-// This is required because every Product belongs to one Category (1:N)
 const categoryId = Joi.number().integer(); 
 
-const price_min = Joi.number().integer();
-const price_max = Joi.number().integer();
-
-
+const price_min = Joi.number();
+const price_max = Joi.number();
 
 const limit = Joi.number().integer();
 const offset = Joi.number().integer();
@@ -20,7 +18,6 @@ const createProductSchema = Joi.object({
   name: name.required(),
   price: price.required(),
   image: image.required(),
-  // We require this so the database knows which category to link this product to
   categoryId: categoryId.required(), 
 });
 
@@ -28,7 +25,7 @@ const updateProductSchema = Joi.object({
   name,
   price,
   image,
-  categoryId, // Optional on update
+  categoryId, 
 });
 
 const getProductSchema = Joi.object({
@@ -40,8 +37,9 @@ const queryProductSchema = Joi.object({
   offset,
   price,
   price_min,
+  // Si envías precio mínimo, el máximo es obligatorio
   price_max: price_max.when('price_min', {
-    is: Joi.number().integer(),
+    is: Joi.exist(),
     then: Joi.required()
   }),
 });
