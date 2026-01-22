@@ -1,19 +1,32 @@
-
+// db/config.js
+// Importamos la configuración centralizada
 const { config } = require('../config/config');
 
-const USER = encodeURIComponent(config.dbUser);
-const PASSWORD = encodeURIComponent(config.dbPassword);
-
-// connection URI for PostgreSQL
-const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+/**
+ * En Vercel y entornos modernos, es mejor usar la URL completa (URI).
+ * Si config.dbUrl existe (DATABASE_URL), la usamos directamente.
+ * De lo contrario, usamos la construcción manual por si estás en local.
+ */
+const URI = config.dbUrl || `postgres://${encodeURIComponent(config.dbUser)}:${encodeURIComponent(config.dbPassword)}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
 
 module.exports = {
-  development:{
+  development: {
     url: URI,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        // Requerido para bases de datos en la nube como Vercel/Neon
+        rejectUnauthorized: false
+      }
+    }
   },
-  production:{
+  production: {
     url: URI,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
   }
 }

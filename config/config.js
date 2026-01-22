@@ -1,29 +1,17 @@
-// db/config.js
+// config/config.js
 require('dotenv').config();
 
-// Extraemos la URL de la base de datos de las variables de entorno
-const dbUrl = process.env.DATABASE_URL;
-
-module.exports = {
-  // Configuración para Vercel (Producción)
-  production: {
-    url: dbUrl,
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        // Obligatorio para conectar con bases de datos en la nube (Vercel/Neon)
-        rejectUnauthorized: false
-      }
-    }
-  },
-  // Configuración para tu entorno local (Desarrollo)
-  development: {
-    url: dbUrl,
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false
-      }
-    }
-  }
+const config = {
+  env: process.env.NODE_ENV || 'dev',
+  port: process.env.PORT || 3000,
+  dbUser: process.env.DB_USER,
+  dbPassword: process.env.DB_PASSWORD,
+  dbHost: process.env.DB_HOST,
+  dbName: process.env.DB_NAME,
+  dbPort: process.env.DB_PORT,
+  // ESTA ES LA CLAVE: En Vercel, esta variable contiene toda la conexión.
+  // Si no la agregas aquí, db/config.js dará el error "undefined".
+  dbUrl: process.env.DATABASE_URL, 
 };
+
+module.exports = { config };
