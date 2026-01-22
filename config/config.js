@@ -3,6 +3,7 @@ require('dotenv').config();
 const config ={
     env: process.env.NODE_ENV || 'dev',
     port: process.env.PORT || 3000,
+    dbUrl: process.env.DATABASE_URL,
     dbUser: process.env.DB_USER || 'root', // Cambiado de 'andres' a 'root' para desarrollo
     dbPassword: process.env.DB_PASSWORD || 'admin123',
     dbHost: process.env.DB_HOST || '127.0.0.1', // Cambiado de 'localhost' a '127.0.0.1'
