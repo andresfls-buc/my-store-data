@@ -1,17 +1,29 @@
-
-if(process.env.NODE_ENV !== 'production'){
+// db/config.js
 require('dotenv').config();
-}
 
-const config ={
-    env: process.env.NODE_ENV || 'dev',
-    port: process.env.PORT || 3000,
-    dbUrl: process.env.DATABASE_URL,
-    dbUser: process.env.DB_USER || 'root', // Cambiado de 'andres' a 'root' para desarrollo
-    dbPassword: process.env.DB_PASSWORD || 'admin123',
-    dbHost: process.env.DB_HOST || '127.0.0.1', // Cambiado de 'localhost' a '127.0.0.1'
-    dbPort: process.env.DB_PORT || 3306,        // ¡EL CAMBIO CLAVE AQUÍ!
-    dbName: process.env.DB_NAME || 'my_store',
-}
+// Extraemos la URL de la base de datos de las variables de entorno
+const dbUrl = process.env.DATABASE_URL;
 
-module.exports = { config };
+module.exports = {
+  // Configuración para Vercel (Producción)
+  production: {
+    url: dbUrl,
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        // Obligatorio para conectar con bases de datos en la nube (Vercel/Neon)
+        rejectUnauthorized: false
+      }
+    }
+  },
+  // Configuración para tu entorno local (Desarrollo)
+  development: {
+    url: dbUrl,
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
+  }
+};
