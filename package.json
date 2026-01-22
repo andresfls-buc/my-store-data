@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "build": "echo 'Done'",
+    "build": "echo 'Build skip'",
     
     "postinstall": "sequelize-cli db:migrate --env production",
     "lint": "eslint",
