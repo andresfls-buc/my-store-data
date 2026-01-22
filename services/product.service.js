@@ -3,6 +3,8 @@ const boom = require('@hapi/boom');
 // Import the initialized Sequelize models from our library
 const { models } = require('../libs/sequelize');
 
+const { Op } = require('sequelize');
+
 class ProductsService {
 
   constructor() {
@@ -21,22 +23,36 @@ class ProductsService {
    * Retrieves all products with optional pagination.
    * @param {Object} query - Contains limit and offset for pagination
    */
-  async find(query) { // <-- CORRECCIÓN: Ahora recibimos 'query' como parámetro
+  async find(query) { //  Ahora recibimos 'query' como parámetro
     const options = {
       include: ['category'],
       where: {}
     };
 
-    // CORRECCIÓN: Extraemos limit y offset del objeto query recibido
+    const { price } = query || {}; //  Extraemos 'price' del objeto 'query'
+    if (price) {
+      options.where.price = price; //  Filtramos por precio si se proporciona
+    }
+
+    const { price_min, price_max } = query || {}; // Extraemos price_min y price_max del objeto query
+    if (price_min && price_max) {
+      options.where.price = {
+        
+        [Op.gte]: price_min,
+        [Op.lte]: price_max
+      };
+    }
+
+    // Extraemos limit y offset del objeto query recibido
     const { limit, offset } = query || {}; 
 
     if (limit && offset) {
-      // CORRECCIÓN: Convertimos a Number para asegurar que Sequelize lo procese bien
+      // Convertimos a Number para asegurar que Sequelize lo procese bien
       options.limit = parseInt(limit);
       options.offset = parseInt(offset);
     }
 
-    // CORRECCIÓN: Todo este bloque ahora está dentro del scope de la función find
+    // Todo este bloque ahora está dentro del scope de la función find
     const rta = await models.Product.findAll(options);
     return rta;
   }
