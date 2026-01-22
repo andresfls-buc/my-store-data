@@ -36,9 +36,6 @@ app.listen(port, () => {
   console.log('Mi port ' + port);
 });
 
-// VITAL: Sin esta línea, Vercel no puede "levantar" tu app de Express
-module.exports = app;
-
 // Solo corre el listen si NO estás en Vercel
 if (process.env.NODE_ENV !== 'production') {
   const port = process.env.PORT || 3000;
@@ -46,3 +43,7 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`Listening on ${port}`);
   });
 }
+
+// VITAL: Sin esta línea, Vercel no puede "levantar" tu app de Express
+module.exports = app;
+
