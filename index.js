@@ -1,46 +1,40 @@
-const result = require('dotenv').config();
-if (result.error) {
-  console.log("Error cargando .env:", result.error);
-}
+// index.js (Debe estar en la RAÍZ de tu proyecto)
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const routerApi = require('./routes');
-
-const { logErrors, ormErrorHandler ,  boomErrorHandler, errorHandler} = require('./middlewares/error.handler');
+const { logErrors, ormErrorHandler, boomErrorHandler, errorHandler } = require('./middlewares/error.handler');
 
 const app = express();
+// Vercel asignará el puerto automáticamente
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const whitelist = ['http://localhost:8080', 'https://myapp.co'];
-const options = {
-  origin: (origin, callback) => {
-    if (whitelist.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('no permitido'));
-    }
-  }
-}
-app.use(cors(options));
+// CORS: Permitimos todo temporalmente para que Insomnia no falle por origen
+app.use(cors()); 
 
 app.get('/', (req, res) => {
-  res.send('Hola mi server en express');
+  res.send('Hola mi server en express está vivo en Vercel');
 });
 
 app.get('/nueva-ruta', (req, res) => {
   res.send('Hola, soy una nueva ruta');
 });
 
+// Aquí se cargan tus rutas complejas (/api/v1/customers, etc)
 routerApi(app);
 
-app.use(logErrors);  // 1 Logging errors
-app.use(ormErrorHandler);  // 2 ORM error handling convert SQL errors to Boom
-app.use(boomErrorHandler);  // 3 Boom error handling
-app.use(errorHandler);  // 4 500 response if nothing else work
+// Middlewares de error (El orden importa)
+app.use(logErrors);
+app.use(ormErrorHandler);
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
-
+// Esto sirve para local, pero Vercel usará el export de abajo
 app.listen(port, () => {
-  console.log('Mi port' +  port);
+  console.log('Mi port ' + port);
 });
+
+// VITAL: Sin esta línea, Vercel no puede "levantar" tu app de Express
+module.exports = app;
