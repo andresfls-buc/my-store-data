@@ -1,22 +1,21 @@
-// api/index.js
+// index.js (In the Root)
 require('dotenv').config();
 const express = require('express');
-const routerApi = require('../routes'); // Added ../ because the file moved to /api
-const { logErrors, ormErrorHandler, boomErrorHandler, errorHandler } = require('../middlewares/error.handler'); // Added ../
+const routerApi = require('./routes'); // This looks for ./routes/index.js by default
+const { logErrors, ormErrorHandler, boomErrorHandler, errorHandler } = require('./middlewares/error.handler');
 
 const app = express();
 app.use(express.json());
 
-// Health Check route
+// Basic health check
 app.get('/health', (req, res) => {
-  res.json({
+  res.json({ 
     status: 'active',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
+    dbUrl: process.env.DATABASE_URL ? 'Detected' : 'Missing' 
   });
 });
 
-// Initialize Routes
+// This calls the function you just sent me
 routerApi(app);
 
 // Error Middlewares
@@ -25,7 +24,4 @@ app.use(ormErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);
 
-/* IMPORTANT: For Vercel, we export the app. 
-   Vercel will handle the 'app.listen' logic internally.
-*/
 module.exports = app;
