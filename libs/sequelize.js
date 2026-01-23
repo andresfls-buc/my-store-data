@@ -2,20 +2,30 @@ const { Sequelize } = require('sequelize');
 const { config } = require('../config/config');
 const setUpModels = require('./../db/models');
 
-const USER = encodeURIComponent(config.dbUser);
-const PASSWORD = encodeURIComponent(config.dbPassword);
+const options = {
+  dialect: 'postgres',
+  logging: config.env === 'dev' ? console.log : false, // Log only in dev mode
+};
 
-// connection URI for PostgreSQL
-const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+// CRITICAL: Add SSL configuration for production (Vercel)
+if (config.env === 'production') {
+  options.dialectOptions = {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false // Required for most cloud DBs
+    }
+  };
+}
 
-// Crear la instancia de Sequelize 
-const sequelize = new Sequelize(URI, {
-    dialect: 'postgres',
-    logging: console.log, // Cambia true por console.log para quitar el Warning
-});
+/* FIX: Check if we have a full dbUrl (DATABASE_URL). 
+  If we do, use it directly. Otherwise, build it from parts.
+*/
+const connectionUri = config.dbUrl 
+  ? config.dbUrl 
+  : `postgres://${encodeURIComponent(config.dbUser)}:${encodeURIComponent(config.dbPassword)}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+
+const sequelize = new Sequelize(connectionUri, options);
 
 setUpModels(sequelize);
-
-
 
 module.exports = sequelize;

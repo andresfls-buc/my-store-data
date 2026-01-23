@@ -9,8 +9,11 @@ const config = {
   dbHost: process.env.DB_HOST,
   dbName: process.env.DB_NAME,
   dbPort: process.env.DB_PORT,
-  // ESTA ES LA CLAVE: En Vercel, esta variable contiene toda la conexión.
-  // Si no la agregas aquí, db/config.js dará el error "undefined".
+  
+  /* FIX: Ensure this matches the EXACT name you used in the Vercel Dashboard.
+     Vercel usually provides 'DATABASE_URL' automatically if using their Postgres,
+     or you added it manually as 'DATABASE_URL'.
+  */
   dbUrl: process.env.DATABASE_URL, 
 };
 
