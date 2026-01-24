@@ -9,8 +9,9 @@ class CustomerService {
       include: ['user'], // includes related user
     };
     // Pagination
-    const { limit, offset } = query;      
-    if (limit && offset) {
+    const { limit, offset } = query;   
+    //this code allows that 0 is a valid limit or offset 
+    if (limit !== undefined && offset !== undefined) {
       options.limit = limit;
       options.offset = offset;
     }
