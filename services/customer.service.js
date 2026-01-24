@@ -8,6 +8,7 @@ class CustomerService {
     const options = {
       include: ['user'], // includes related user
     };
+    const { limit, offset } = query;
    // Pagination
   if (limit && offset) {
     options.limit = Number(limit);
