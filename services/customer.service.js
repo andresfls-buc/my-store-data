@@ -8,14 +8,14 @@ class CustomerService {
     const options = {
       include: ['user'], // includes related user
     };
-    // Pagination
-    const { limit, offset } = query;   
-    //this code allows that 0 is a valid limit or offset 
-    if (limit !== undefined && offset !== undefined) {
-      options.limit = limit;
-      options.offset = offset;
-    }
-  
+   // Pagination
+  if (limit && offset) {
+    options.limit = Number(limit);
+    options.offset = Number(offset);
+  }
+
+  // THIS LOG IS CRITICAL - Look at your terminal!
+  console.log("Sequelize Options:", JSON.stringify(options, null, 2));
     const rta = await models.Customer.findAll(options);
     return rta;
   }
