@@ -4,16 +4,24 @@ const { models } = require('../libs/sequelize');
 class CustomerService {
   constructor() {}
 
-  async find() {
-    const rta = await models.Customer.findAll({
-      include: ['user'] // includes related user
-    });
+  async find(query) {
+    const options = {
+      include: ['user'], // includes related user
+    };
+    // Pagination
+    const { limit, offset } = query;      
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
+    }
+  
+    const rta = await models.Customer.findAll(options);
     return rta;
   }
 
   async create(data) {
 
-    
+    // Create a new customer along with the associated user
     const newCustomer = await models.Customer.create(data,{
       include: ['user']
     });

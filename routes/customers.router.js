@@ -9,7 +9,10 @@ const service = new CustomerService();
 // GET: Leer todos los clientes
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await service.find());
+    //get the data from the service
+    const customers = await service.find(req.query);
+    //send the response
+    res.json(customers);
   } catch (error) {
     next(error);
   }
