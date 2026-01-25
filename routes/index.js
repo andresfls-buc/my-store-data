@@ -15,7 +15,8 @@ function routerApi(app) {
   // This mounts all routes below under the /api/v1 prefix
   app.use('/api/v1', router);
   
-  router.get('/', checkApiKey, (req, res) => {
+  // Example of a protected route using the API key middleware
+  router.get('/nueva-ruta', checkApiKey, (req, res) => {
     res.send('Welcome to My Store ');
   });
   
