@@ -2,6 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const routerApi = require('./routes'); 
+const { checkApiKey } = require('./middlewares/auth.handler');
+
 const { logErrors, ormErrorHandler, boomErrorHandler, errorHandler } = require('./middlewares/error.handler');
 
 const app = express();
@@ -15,6 +17,10 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     dbUrl: process.env.DATABASE_URL ? 'Detected' : 'Missing' 
   });
+});
+
+app.get('/nueva-ruta', checkApiKey, (req, res) => {
+  res.send('Welcome to the API');
 });
 
 // Mount routes

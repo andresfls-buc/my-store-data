@@ -17,6 +17,7 @@ class CustomerService {
 
   // THIS LOG IS CRITICAL - Look at your terminal!
   console.log("Sequelize Options:", JSON.stringify(options, null, 2));
+  
     const rta = await models.Customer.findAll(options);
     return rta;
   }

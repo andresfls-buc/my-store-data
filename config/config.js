@@ -9,6 +9,7 @@ const config = {
   dbHost: process.env.DB_HOST,
   dbName: process.env.DB_NAME,
   dbPort: process.env.DB_PORT,
+  apiKey: process.env.API_KEY,
   
   /* FIX: Ensure this matches the EXACT name you used in the Vercel Dashboard.
      Vercel usually provides 'DATABASE_URL' automatically if using their Postgres,
