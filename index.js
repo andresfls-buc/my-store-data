@@ -19,9 +19,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/nueva-ruta', checkApiKey, (req, res) => {
-  res.send('Welcome to the API');
-});
+
 
 // Mount routes
 routerApi(app);

@@ -6,6 +6,7 @@ const categoriesRouter = require('./categories.router');
 const usersRouter = require('./users.router');
 const orderRouter = require('./orders.router');
 const customerRouter = require('./customers.router');
+const { checkApiKey } = require('../middlewares/auth.handler');
 
 function routerApi(app) {
   // This creates a router instance for all v1 routes
@@ -13,6 +14,10 @@ function routerApi(app) {
   
   // This mounts all routes below under the /api/v1 prefix
   app.use('/api/v1', router);
+  
+  router.get('/', checkApiKey, (req, res) => {
+    res.send('Welcome to My Store ');
+  });
   
   // These are now sub-routes of /api/v1
   router.use('/products', productsRouter); // Result: /api/v1/products
