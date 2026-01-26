@@ -33,6 +33,19 @@ async find() {
     }
   }
 
+  async findByEmail( email) {
+    try {
+      
+      const rta = await models.User.findOne({
+        where: { email }
+      });
+      return rta;
+    } catch (error) {
+      console.error(error);
+      throw boom.internal('Error al obtener el usuario por email');
+    }
+  }
+
   async findOne(id) {
     // Find user by primary key
     const user = await models.User.findByPk(id , {
