@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-
+require('./utils/auth'); // Import the authentication setup
 
 // Mount routes
 routerApi(app);

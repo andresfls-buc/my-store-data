@@ -6,6 +6,7 @@ const categoriesRouter = require('./categories.router');
 const usersRouter = require('./users.router');
 const orderRouter = require('./orders.router');
 const customerRouter = require('./customers.router');
+const authRouter = require('./auth.router');
 const { checkApiKey } = require('../middlewares/auth.handler');
 
 function routerApi(app) {
@@ -26,6 +27,7 @@ function routerApi(app) {
   router.use('/users', usersRouter);       // Result: /api/v1/users
   router.use('/orders', orderRouter);
   router.use('/customers', customerRouter);
+  router.use('/auth', authRouter);
 }
 
 module.exports = routerApi;
