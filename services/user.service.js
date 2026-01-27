@@ -33,7 +33,7 @@ async find() {
     }
   }
 
-  async findByEmail( email) {
+  async findByEmail(email) {
     try {
       
       const rta = await models.User.findOne({
