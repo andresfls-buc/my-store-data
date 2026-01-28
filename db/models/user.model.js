@@ -18,6 +18,13 @@ const UserSchema = {
     allowNull: false,
     type: DataTypes.STRING
   },
+  
+  role: {
+  allowNull: false,
+  type: DataTypes.STRING,
+  defaultValue: 'customer'
+},
+
   // Solo un campo de password, y el createdAt abajo
   createdAt: {
     allowNull: false,
