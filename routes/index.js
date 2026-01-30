@@ -8,6 +8,7 @@ const orderRouter = require('./orders.router');
 const customerRouter = require('./customers.router');
 const authRouter = require('./auth.router');
 const { checkApiKey } = require('../middlewares/auth.handler');
+const profileRouter = require('./profile.router')
 
 function routerApi(app) {
   // This creates a router instance for all v1 routes
@@ -28,6 +29,7 @@ function routerApi(app) {
   router.use('/orders', orderRouter);
   router.use('/customers', customerRouter);
   router.use('/auth', authRouter);
+  router.use('/profile', profileRouter);
 }
 
 module.exports = routerApi;
