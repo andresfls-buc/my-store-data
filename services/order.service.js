@@ -6,7 +6,19 @@ class OrderService {
 
   // CREATE a new order
   async create(data) {
-    const newOrder = await models.Order.create(data);
+    // Find the customer associated with the userId from the token payload
+    const customer = await models.Customer.findOne({
+      where: { userId: data.userId } //data.userId es el 'sub' del token
+    });
+    if(!customer){
+      throw boom.notFound('Customer not found for user');
+    }
+    
+    // Create a new order linked to the found customer
+    const newOrder = await models.Order.create({
+      customerId: customer.id
+    });
+
     return newOrder;
   }
 

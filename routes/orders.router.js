@@ -1,7 +1,9 @@
 const express = require('express');
+const passport = require('passport');
+
 const OrderService = require('./../services/order.service');
 const validatorHandler = require('./../middlewares/validator.handler');
-const { createOrderSchema, getOrderSchema } = require('./../schemas/order.schema');
+const { getOrderSchema } = require('./../schemas/order.schema');
 const { addItemSchema } = require('./../schemas/order-product.schema');
 const router = express.Router();
 
@@ -29,10 +31,20 @@ router.get('/:id', validatorHandler(getOrderSchema, 'params'), async (req, res, 
 });
 
 // POST create a new order
-router.post('/', validatorHandler(createOrderSchema, 'body'), async (req, res, next) => {
+
+router.post('/', 
+  // Verify who is the user
+  passport.authenticate('jwt', { session: false }),
+
+ async (req, res, next) => {
   try {
-    const body = req.body;
-    const newOrder = await service.create(body);
+
+    const user = req.user; // The user object is attached to the request by passport
+
+    const newOrder = await service.create({
+
+      userId: user.sub // 'sub' contains the user ID from the JWT payload
+    });
     res.status(201).json(newOrder);
   } catch (error) {
     next(error);
@@ -41,6 +53,8 @@ router.post('/', validatorHandler(createOrderSchema, 'body'), async (req, res, n
 
 // POST add item to an order
 router.post('/add-item',
+  // Protect the addition of items to authenticated users
+   passport.authenticate('jwt', { session: false }),
    validatorHandler(addItemSchema, 'body'), 
   // If validation passes, this function runs
   async (req, res, next) => {
@@ -54,7 +68,9 @@ router.post('/add-item',
 });
 
 // PATCH update order
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id',
+  passport.authenticate('jwt', { session: false }),
+   async (req, res, next) => {
   try {
     const { id } = req.params;
     const body = req.body;
@@ -66,7 +82,9 @@ router.patch('/:id', async (req, res, next) => {
 });
 
 // DELETE order
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', 
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
   try {
     const { id } = req.params;
     await service.delete(id);
