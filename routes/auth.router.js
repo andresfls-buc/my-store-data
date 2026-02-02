@@ -27,7 +27,7 @@ router.post('/recovery',
     try {
       const { email } = req.body;
       
-      const rta = await authService.sendMail(email);
+      const rta = await authService.sendRecovery(email);
       res.json(rta);
      
     } catch (error) {

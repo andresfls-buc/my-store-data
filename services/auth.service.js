@@ -34,15 +34,33 @@ class AuthService {
     };
   }
 
-  async sendMail(email) {
+  async sendRecovery(email){
     const user = await service.findByEmail(email);
-    
-    // SECURITY FIX: Instead of throwing boom.notFound, we return early.
+     // SECURITY FIX: Instead of throwing boom.notFound, we return early.
     // This keeps the router clean and avoids the 404 error.
     if (!user) {
       return { message: 'If an account exists, a recovery email has been sent' };
     }
+    const payload = {
+      sub: user.id,
+      type: 'recovery'
+    };
+    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '15min' });
+    const link = `http://myfrontend.com/recovery?token=${token}`;
+    // update user with recovery token
+    await service.update(user.id, { recoveryToken: token });
+  const mail = {
+    from: `"Andres" <${config.MAIL_USER}>`,
+    to: `${user.email}`,
+    subject: "Password Recovery",
+    html: `<b>Recupera tu contraseña siguiendo este enlace =></b><br><a href="${link}">Recovery Link</a>`,
+    }
+    const rta = await this.sendMail(mail);
+    return rta;
+  }
 
+  async sendMail(infoMail) {
+    
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
@@ -53,13 +71,7 @@ class AuthService {
       }
     });
 
-    await transporter.sendMail({
-      from: `"Andres" <${config.MAIL_USER}>`,
-      to: `${user.email}`,
-      subject: "Password Recovery",
-      text: "Recuperacion de contrasena.",
-      html: "<b>Recupera tu contraseña siguiendo este enlace</b>",
-    });
+    await transporter.sendMail(infoMail);
 
     // We return the EXACT same message as the "if(!user)" case
     return { message: 'If an account exists, a recovery email has been sent' };
