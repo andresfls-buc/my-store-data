@@ -59,6 +59,28 @@ class AuthService {
     return rta;
   }
 
+
+  async resetPassword(token, newPassword) {
+    try {
+      const payload = jwt.verify(token, config.jwtSecret);
+      if (payload.type !== 'recovery') {
+        throw boom.unauthorized();
+      }
+      const user = await service.findOne(payload.sub);
+      if (user.recoveryToken !== token) {
+        throw boom.unauthorized();
+      }
+      const hash = await bcrypt.hash(newPassword, 10);
+      await service.update(user.id, {
+        password: hash,
+        recoveryToken: null
+      });
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      throw boom.unauthorized();
+    }
+  }
+
   async sendMail(infoMail) {
     
     const transporter = nodemailer.createTransport({
