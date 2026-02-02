@@ -1,0 +1,69 @@
+const boom = require('@hapi/boom');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { config } = require('../config/config');
+const nodemailer = require('nodemailer');
+
+const UserService = require('./user.service');
+const service = new UserService();
+
+class AuthService {
+  async getUser(email, password) {
+    const user = await service.findByEmail(email);
+    if (!user) {
+      // In login, we keep the error because we need to stop the process
+      throw boom.unauthorized(); 
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw boom.unauthorized();
+    }
+    delete user.dataValues.password;
+    return user;
+  }
+
+  signToken(user) {
+    const payload = {
+      sub: user.id,
+      role: user.role,
+    };
+    const token = jwt.sign(payload, config.jwtSecret);
+    return {
+      user,
+      token
+    };
+  }
+
+  async sendMail(email) {
+    const user = await service.findByEmail(email);
+    
+    // SECURITY FIX: Instead of throwing boom.notFound, we return early.
+    // This keeps the router clean and avoids the 404 error.
+    if (!user) {
+      return { message: 'If an account exists, a recovery email has been sent' };
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: config.MAIL_USER, // Using config object for consistency
+        pass: config.MAIL_PASS  // Using config object for consistency
+      }
+    });
+
+    await transporter.sendMail({
+      from: `"Andres" <${config.MAIL_USER}>`,
+      to: `${user.email}`,
+      subject: "Password Recovery",
+      text: "Recuperacion de contrasena.",
+      html: "<b>Recupera tu contraseña siguiendo este enlace</b>",
+    });
+
+    // We return the EXACT same message as the "if(!user)" case
+    return { message: 'If an account exists, a recovery email has been sent' };
+  }
+}
+
+module.exports = AuthService;
