@@ -92,10 +92,19 @@ class AuthService {
         pass: config.MAIL_PASS  // Using config object for consistency
       }
     });
+   try {
+      // Intentamos enviar el correo
+      await transporter.sendMail(infoMail);
+    } catch (error) {
+      // LOGUEAMOS EL ERROR PARA NOSOTROS (para saber por qué falló)
+      console.error("Error al enviar email, pero enviamos 200 al cliente:", error.message);
+      
+      // NO LANZAMOS EL ERROR (no hacemos throw). 
+      // Simplemente dejamos que la función termine.
+    }
 
-    await transporter.sendMail(infoMail);
-
-    // We return the EXACT same message as the "if(!user)" case
+    // Al no haber error (porque lo atrapamos arriba), 
+    // el router recibirá esto y responderá con 200 OK.
     return { message: 'If an account exists, a recovery email has been sent' };
   }
 }
